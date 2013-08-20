@@ -78,8 +78,8 @@ class Desire2Download(object):
         print 'Logging In...'
         self.br.open(self.cas_login)
         self.br.select_form(nr=0)
-        self.br['username'] = self.username
-        self.br['password'] = self.password
+        self.br.form['username'] = self.username
+        self.br.form['password'] = self.password
         response = self.br.submit().read()
         if "Your userid and/or your password are incorrect" in response:
             raise AuthError("Your userid and/or your password are incorrect.")
@@ -90,10 +90,11 @@ class Desire2Download(object):
         links = []
         urls = []
         for link in self.br.links():
-            matches = re.match('[A-Z]+ [0-9A-Za-z/\s]{2,45} - [A-Z][a-z]+ 20[0-9]{2}', link.text)
-            if matches is not None and link.url not in urls:
-                links.append(link)
-                urls.append(link.url)
+            if link.text:
+                matches = re.match('[A-Z]+ [0-9A-Za-z/\s]{2,45} - [A-Z][a-z]+ 20[0-9]{2}', link.text)
+                if matches is not None and link.url not in urls:
+                    links.append(link)
+                    urls.append(link.url)
         return links
 
     def convert_bytes(self, bytes):
